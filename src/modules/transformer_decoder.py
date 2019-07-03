@@ -161,12 +161,11 @@ class TransformerDecoderLayer(nn.Module):
             self.last_ln = LayerNorm(self.embed_dim)
 
     def forward(self, x, ingr_features, ingr_mask, incremental_state, img_features):
-        attn_dict = dict()
 
         # self attention
         residual = x
         x = self.maybe_layer_norm(0, x, before=True)
-        x, attn_selfatt = self.self_attn(
+        x, _ = self.self_attn(
             query=x,
             key=x,
             value=x,
@@ -184,7 +183,7 @@ class TransformerDecoderLayer(nn.Module):
         # attention
         if ingr_features is None:
 
-            x, attn_condatt = self.cond_att(query=x,
+            x, _ = self.cond_att(query=x,
                                     key=img_features,
                                     value=img_features,
                                     key_padding_mask=None,
@@ -192,7 +191,7 @@ class TransformerDecoderLayer(nn.Module):
                                     static_kv=True,
                                     )
         elif img_features is None:
-            x, attn_condatt = self.cond_att(query=x,
+            x, _ = self.cond_att(query=x,
                                     key=ingr_features,
                                     value=ingr_features,
                                     key_padding_mask=ingr_mask,
@@ -206,7 +205,7 @@ class TransformerDecoderLayer(nn.Module):
             kv = torch.cat((img_features, ingr_features), 0)
             mask = torch.cat((torch.zeros(img_features.shape[1], img_features.shape[0], dtype=torch.uint8).to(device),
                               ingr_mask), 1)
-            x, attn_condatt = self.cond_att(query=x,
+            x, _ = self.cond_att(query=x,
                                     key=kv,
                                     value=kv,
                                     key_padding_mask=mask,
@@ -229,7 +228,7 @@ class TransformerDecoderLayer(nn.Module):
         if self.use_last_ln:
             x = self.last_ln(x)
 
-        return x, attn_dict
+        return x
 
     def maybe_layer_norm(self, i, x, before=False, after=False):
         assert before ^ after
@@ -308,16 +307,14 @@ class DecoderTransformer(nn.Module):
         x = x.transpose(0, 1)
 
         for p, layer in enumerate(self.layers):
-            x, attn = layer(
+            x  = layer(
                 x,
                 ingr_features,
                 ingr_mask,
                 incremental_state,
                 img_features
             )
-            for key in attn.keys():
-                attn_dict[key][p] = attn[key]
-            #attn_layers.append(attn)
+            
         # T x B x C -> B x T x C
         x = x.transpose(0, 1)
 
@@ -387,7 +384,7 @@ class DecoderTransformer(nn.Module):
             sampled_ids.append(predicted)
 
         sampled_ids = torch.stack(sampled_ids[1:], 1)
-        logits = torch.stack(logits, 1).data
+        logits = torch.stack(logits, 1)
 
         return sampled_ids, logits
 

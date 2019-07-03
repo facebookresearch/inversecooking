@@ -211,7 +211,7 @@ class InverseCookingModel(nn.Module):
             ingr_ids[sample_mask == 0] = self.pad_value
 
             outputs['ingr_ids'] = ingr_ids
-            outputs['ingr_probs'] = ingr_probs
+            outputs['ingr_probs'] = ingr_probs.data
 
             mask = sample_mask
             input_mask = mask.float().unsqueeze(1)
@@ -230,7 +230,7 @@ class InverseCookingModel(nn.Module):
         ids, probs = self.recipe_decoder.sample(input_feats, input_mask, greedy, temperature, beam, img_features, 0,
                                                 last_token_value=1)
 
-        outputs['recipe_probs'] = probs
+        outputs['recipe_probs'] = probs.data
         outputs['recipe_ids'] = ids
 
         return outputs
