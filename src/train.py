@@ -144,7 +144,7 @@ def main(args):
 
     # add model parameters
     if args.ingrs_only:
-        params = list(model.ingredient_decoder.parameters()) + list(model.ingredient_encoder.parameters())
+        params = list(model.ingredient_decoder.parameters())
     elif args.recipe_only:
         params = list(model.recipe_decoder.parameters()) + list(model.ingredient_encoder.parameters())
     else:

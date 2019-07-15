@@ -90,7 +90,7 @@ We train our model in two stages:
 
 ```bash
 python train.py --model_name im2ingr --batch_size 150 --finetune_after 0 --ingrs_only \
---es_metric iou_sample --perminv_ingrs --loss_weight 0 1000.0 1.0 1.0 \
+--es_metric iou_sample --loss_weight 0 1000.0 1.0 1.0 \
 --learning_rate 1e-4 --scale_learning_rate_cnn 1.0 \
 --save_dir ../checkpoints --recipe1m_dir path_to_dataset
 ```
@@ -111,7 +111,7 @@ $ tensorboard --logdir='../tb_logs' --port=6006
 ### Evaluation
 
 - Save generated recipes to disk with
-```python sample.py --model_name model --greedy --eval_split test```.
+```python sample.py --model_name model --save_dir ../checkpoints --recipe1m_dir path_to_dataset --greedy --eval_split test```.
 - This script will return ingredient metrics (F1 and IoU)
 
 ### License
