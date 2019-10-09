@@ -22,11 +22,11 @@ year = {2019}
 
 ### Installation
 
-This code uses Python 3.6 and PyTorch 0.4. cuda version 9.0.
+This code uses Python 3.6 and PyTorch 0.4.1 cuda version 9.0.
 
 - Installing PyTorch:
 ```bash
-$ conda install pytorch torchvision cuda90 -c pytorch
+$ conda install pytorch=0.4.1 cuda90 -c pytorch
 ```
 
 - Install dependencies
